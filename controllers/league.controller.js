@@ -1,37 +1,30 @@
 const leagueService = require("../services/league.service");
 
-// GET /api/league
 const getLeague = (req, res) => {
   res.json(leagueService.getState());
 };
 
-// POST /api/league/play-week/:week
 const playWeek = (req, res) => {
   const week = Number(req.params.week);
   res.json(leagueService.playWeek(week));
 };
 
-// POST /api/league/play-all
 const playAll = (req, res) => {
   res.json(leagueService.playAll());
 };
 
-// POST /api/league/reset
 const reset = (req, res) => {
   res.json(leagueService.resetLeague());
 };
 
-// GET /api/league/week/:week
 const getWeek = (req, res) => {
   res.json(leagueService.getWeek(req.params.week));
 };
 
-// GET /api/league/weeks
 const getWeeks = (req, res) => {
   res.json(leagueService.getWeeks());
 };
 
-// POST /api/league/edit-match/:matchId  body: { homeGoals, awayGoals }
 const editMatch = (req, res) => {
   const matchId = req.params.matchId;
 

@@ -20,8 +20,6 @@ function shuffle(arr) {
   }
   return a;
 }
-
-// Circle method round-robin (supports odd team count with BYE)
 function generateRoundRobin(teamIds) {
   const teams = [...teamIds];
   if (teams.length % 2 === 1) teams.push("BYE");
@@ -30,7 +28,7 @@ function generateRoundRobin(teamIds) {
   const rounds = n - 1;
   const half = n / 2;
 
-  const list = [...teams]; // rotates
+  const list = [...teams]; 
   const schedule = [];
 
   for (let r = 0; r < rounds; r++) {
@@ -42,7 +40,6 @@ function generateRoundRobin(teamIds) {
 
       if (t1 === "BYE" || t2 === "BYE") continue;
 
-      // balance home/away by round parity
       const home = r % 2 === 0 ? t1 : t2;
       const away = r % 2 === 0 ? t2 : t1;
       pairings.push([home, away]);
@@ -50,14 +47,13 @@ function generateRoundRobin(teamIds) {
 
     schedule.push(pairings);
 
-    // rotate (keep first fixed)
     const fixed = list[0];
     const rest = list.slice(1);
     rest.unshift(rest.pop());
     list.splice(0, list.length, fixed, ...rest);
   }
 
-  return schedule; // single round (weeks)
+  return schedule; 
 }
 
 function createFixture(teamIds) {
@@ -66,7 +62,7 @@ function createFixture(teamIds) {
   const firstLeg = generateRoundRobin(shuffled);
   const secondLeg = firstLeg.map((week) => week.map(([h, a]) => [a, h]));
 
-  const weeks = [...firstLeg, ...secondLeg]; // double round-robin
+  const weeks = [...firstLeg, ...secondLeg]; 
 
   const fixture = [];
   let idCounter = 1;
@@ -90,10 +86,10 @@ function createFixture(teamIds) {
 
 function defaultTeams() {
   return [
-    new Team({ id: "T1", name: "Lions", power: 90 }),
-    new Team({ id: "T2", name: "Eagles", power: 70 }),
-    new Team({ id: "T3", name: "Sharks", power: 50 }),
-    new Team({ id: "T4", name: "Wolves", power: 30 }),
+    new Team({ id: "T1", name: "Fenerbahce", power: 90 }),
+    new Team({ id: "T2", name: "Galatasaray", power: 70 }),
+    new Team({ id: "T3", name: "Besiktas", power: 50 }),
+    new Team({ id: "T4", name: "Trabzonspor", power: 30 }),
   ];
 }
 
@@ -134,13 +130,6 @@ function validateTeams(teams) {
   });
 }
 
-/** ---------- Core State ---------- */
-
-/**
- * initLeague can take optional custom teams:
- * initLeague([{id,name,power}, ...])
- * If not provided, uses defaultTeams().
- */
 function initLeague(customTeams) {
   const teams = Array.isArray(customTeams)
     ? customTeams.map((t) => new Team(t))
@@ -168,7 +157,6 @@ function getState() {
   return state;
 }
 
-/** ---------- Simulation ---------- */
 
 function playWeek(week) {
   const st = getState();
@@ -218,7 +206,6 @@ function resetLeague(customTeams) {
   return initLeague(customTeams);
 }
 
-/** ---------- Queries ---------- */
 
 function getWeek(week) {
   const st = getState();
@@ -244,7 +231,6 @@ function getWeeks() {
   return weeks;
 }
 
-/** ---------- Edit Match ---------- */
 
 function editMatch(matchId, homeGoals, awayGoals) {
   const st = getState();
@@ -293,7 +279,6 @@ function editMatch(matchId, homeGoals, awayGoals) {
   return st;
 }
 
-/** ---------- Update Team ---------- */
 
 function updateTeam(teamId, updates) {
   const st = getState();
@@ -335,27 +320,22 @@ function updateTeam(teamId, updates) {
     st.prediction = predictChampionPercent(st.teams, st.fixture, 1500);
   }
 
-  return st; // ✅ always return full state
+  return st; 
 }
 
 module.exports = {
-  // fixture
   createFixture,
 
-  // state
   initLeague,
   resetLeague,
   getState,
 
-  // simulation
   playWeek,
   playAll,
 
-  // queries
   getWeek,
   getWeeks,
 
-  // edits
   editMatch,
   updateTeam,
 };

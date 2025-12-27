@@ -13,7 +13,6 @@ function predictChampionPercent(teams, fixture, simulations = 1000) {
   const teamsById = buildTeamsById(teams);
   const unplayed = fixture.filter(m => !m.played);
 
-  // Lig bitmişse:
   if (unplayed.length === 0) {
     const finalTable = computeStandings(teams, fixture);
     const out = {};
@@ -27,7 +26,6 @@ function predictChampionPercent(teams, fixture, simulations = 1000) {
   for (let i = 0; i < simulations; i++) {
     const fx = deepClone(fixture);
 
-    // kalan maçları oynat
     fx.filter(m => !m.played).forEach(m => {
       playMatch(m, teamsById);
     });
@@ -41,7 +39,6 @@ function predictChampionPercent(teams, fixture, simulations = 1000) {
     perc[id] = Math.round((wins[id] / simulations) * 100);
   });
 
-  // yuvarlama düzeltmesi
   const sum = Object.values(perc).reduce((a, b) => a + b, 0);
   if (sum !== 100) {
     const now = computeStandings(teams, fixture);
