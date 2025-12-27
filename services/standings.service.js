@@ -1,7 +1,6 @@
-// services/standings.service.js
+
 
 function getHeadToHead(aId, bId, fixture) {
-  // only played matches between A and B
   const h2h = fixture.filter(
     (m) =>
       m.played &&
@@ -9,7 +8,6 @@ function getHeadToHead(aId, bId, fixture) {
         (m.homeTeamId === bId && m.awayTeamId === aId))
   );
 
-  // points, goals for/against from A perspective
   let ptsA = 0;
   let gfA = 0;
   let gaA = 0;
@@ -35,24 +33,18 @@ function compareHeadToHead(a, b, fixture) {
   const h2hA = getHeadToHead(a.teamId, b.teamId, fixture);
   const h2hB = getHeadToHead(b.teamId, a.teamId, fixture);
 
-  // If there are no head-to-head played matches yet, can't decide
   if (h2hA.played === 0) return 0;
 
-  // 1) head-to-head points
   if (h2hA.ptsA !== h2hB.ptsA) return h2hB.ptsA - h2hA.ptsA;
 
-  // 2) head-to-head goal difference
   if (h2hA.gdA !== h2hB.gdA) return h2hB.gdA - h2hA.gdA;
 
-  // 3) head-to-head goals for (opsiyonel ama mantıklı)
   if (h2hA.gfA !== h2hB.gfA) return h2hB.gfA - h2hA.gfA;
 
   return 0;
 }
 
 function computeStandings(teams, fixture) {
-  // --- burası sende zaten var: played/win/draw/loss/gf/ga/gd/points hesapla ---
-  // Aşağıdaki "table" senin var olan standings array'in olsun:
   const table = teams.map((t) => ({
     teamId: t.id,
     teamName: t.name,
@@ -103,25 +95,18 @@ function computeStandings(teams, fixture) {
     r.gd = r.gf - r.ga;
   }
 
-  // ✅ UPDATED SORT: points > gd > gf > ga (if you used ga) > head-to-head
   table.sort((a, b) => {
-    // 1) points desc
     if (a.points !== b.points) return b.points - a.points;
 
-    // 2) goal difference desc
     if (a.gd !== b.gd) return b.gd - a.gd;
 
-    // 3) goals for desc
     if (a.gf !== b.gf) return b.gf - a.gf;
 
-    // 4) goals against asc (daha az yiyen üstte) — sen şartta GA eşit diyorsun ama yine de kalsın
     if (a.ga !== b.ga) return a.ga - b.ga;
 
-    // 5) head-to-head (ikili averaj)
     const h2h = compareHeadToHead(a, b, fixture);
     if (h2h !== 0) return h2h;
 
-    // 6) final fallback: teamName alphabetic (stable deterministic)
     return a.teamName.localeCompare(b.teamName);
   });
 
